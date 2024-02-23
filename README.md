@@ -3,6 +3,9 @@ URL_shortner
 [![Coverage Status](https://coveralls.io/repos/github/IgihozoColombe/URL-Shortener/badge.svg?branch=master)](https://coveralls.io/github/IgihozoColombe/URL-Shortener?branch=master)
 
 
+https://coveralls.io/repos/github/IgihozoColombe/URL-Shortener/badge.svg?branch=master(Coverage Status)!:https://coveralls.io/github/IgihozoColombe/URL-Shortener?branch=master
+
+
 Url_shortner_work is a URL shortening service that allows logged in users to shorten long URLs into shorter, more manageable links.
 
 Features
