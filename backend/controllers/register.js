@@ -14,12 +14,11 @@ const User = require('../models/User')
 const ShortUrl = require('../models/shortUrl')
 users.use(cors())
 const mongoose = require('mongoose')
-const { validationResult } = require("express-validator");
 process.env.SECRET_KEY = 'secret'
 process.env.CLIENT_URL = 'https://shorten-url-1.herokuapp.com'
 
 
-exports.register = (req, res, next) => {
+exports.postSignup = (req, res, next) => {
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
     const email = req.body.email;
@@ -46,15 +45,46 @@ exports.register = (req, res, next) => {
             return user.save();
           })
           .then((result) => {
-            res.json({ message: "Signup successfull",  });
+            res.json({ message: "Signup successfull", error: false, result });
           })
           .catch((err2) => {
-            res.json(err2 );
+            res.json({ message: err2, error: true });
           });
       })
       .catch((err) => {
-        res.json({ err, error: true });
+        res.json({ message: err, error: true });
       });
   };
   
 
+exports.register = (req, res) => {
+  const today = new Date()
+  const payload = {
+    first_name: req.body.first_name,
+    last_name: req.body.last_name,
+    email: req.body.email,
+    password: req.body.password,
+    created: today,
+  }
+
+  User.findOne({
+    email: req.body.email,
+  })
+    .then((user) => {
+      if (!user) {
+        bcrypt.hash(req.body.password, 10, (err, hash) => {
+          payload.password = hash
+        })
+        const token = jwt.sign(payload, process.env.SECRET_KEY, {
+          expiresIn: '5m',
+        })
+
+        return res.status(400).json({ error: 'Registered successfully!' })
+      } else {
+        res.json({ error: 'User already exists' })
+      }
+    })
+    .catch((err) => {
+      res.send('error: ' + err)
+    })
+}
