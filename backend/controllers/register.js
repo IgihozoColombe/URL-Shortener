@@ -18,14 +18,13 @@ process.env.SECRET_KEY = 'secret'
 process.env.CLIENT_URL = 'https://shorten-url-1.herokuapp.com'
 
 
-exports.postSignup = (req, res, next) => {
+exports.register = (req, res, next) => {
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
     const email = req.body.email;
     const password = req.body.password;
    
   
-    const errors = validationResult(req);
     
     User.findOne({ email: email })
       .then((userDoc) => {
@@ -56,35 +55,3 @@ exports.postSignup = (req, res, next) => {
       });
   };
   
-
-exports.register = (req, res) => {
-  const today = new Date()
-  const payload = {
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
-    email: req.body.email,
-    password: req.body.password,
-    created: today,
-  }
-
-  User.findOne({
-    email: req.body.email,
-  })
-    .then((user) => {
-      if (!user) {
-        bcrypt.hash(req.body.password, 10, (err, hash) => {
-          payload.password = hash
-        })
-        const token = jwt.sign(payload, process.env.SECRET_KEY, {
-          expiresIn: '5m',
-        })
-
-        return res.status(400).json({ error: 'Registered successfully!' })
-      } else {
-        res.json({ error: 'User already exists' })
-      }
-    })
-    .catch((err) => {
-      res.send('error: ' + err)
-    })
-}
